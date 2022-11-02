@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 const tabla_usuarios = new mongoose.Schema({ //Creado el objeto del modelo de dato que necesito
     cedula : Number,
     correo : String,
@@ -7,7 +8,7 @@ const tabla_usuarios = new mongoose.Schema({ //Creado el objeto del modelo de da
     datetime : Date
 })
 
-const UsuarioModel = mongoose.model("Usuarios", tabla_usuarios)
+const UsuariosModel = mongoose.model("Usuarios", tabla_usuarios)
 
 module.exports = {
     UsuariosModel

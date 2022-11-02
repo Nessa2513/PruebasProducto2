@@ -6,10 +6,11 @@ const app = express()
 const bodyParser = require('body-parser')
 const puerto = 3000
 const mongoose = require('mongoose')
-const UsuarioModel = require('module')
+const dbmodel = require('./dbmodel')
 const config = require('./config')
 const { callbackify } = require('util')
 const bcrypt = require("bcrypt")
+const jwt = require('jsonwebtoken')
 
 // Dos tipos de registro; Timestamp para cuando fue creado y otro para cuando fue actualizado (CreatedAt y UpdateAt) - se ve en la documentación de Mongoose
 
@@ -23,22 +24,37 @@ const rutasProtegidas = express.Router() //Metodo Router y se agrega a esta cons
 rutasProtegidas.use((req, res, next)=>{
     // Permiso que le doy a la gente para que consuma estos servicios = Token
     const token = req.headers['access-token']
-    if(token == undefined){
-        var payload = {
-            msg : "Error al autenticar"
+    if(token != undefined){
+        jwt.verify(token, app.get('llave'), (err, decoded)=>{
+            if(err){
+                res.json({mensaje : 'Token invalido'})
+            } else{
+                req.decoded = decoded
+                next()
+            }
+        })    
+      /*  var payload = {
+           msg : "Error al autenticar"
         }
         res.send(payload)
-        return
+        return */
+    } else {
+        res.send({
+            mensaje : "Tpken invalido"
+        })
+        
     }
+}) 
+/*
     console.log("token: ", token)
     next() // Pasar al siguiente servicio
-}) //Callback
+}) //Callback */
 
 // EJEMPLO GET
-app.get('/', (req, res)=>{
+app.get('/', rutasProtegidas, (req, res)=>{
     res.send("Datos recibidos")
 })
-
+var contador = 0
 app.get('/hora', (req, res)=>{
     var d = new Date()
     contador +=1
@@ -67,7 +83,7 @@ app.get('/temp/:ciudad', (req,res)=>{
 var usr = ['Camilo', 'Andrea', 'Ivan']
 
 // EJEMPLOS POST
-app.post('/login', (req, res)=>{
+/*app.post('/login', (req, res)=>{
     var payload = {
         msg : "OK"
 }
@@ -83,7 +99,7 @@ var nombre = data.nombre
 //    console.log(data)
         res.send(payload)
 })
-
+*/
 //app.post('/registro', rutasProtegidas, async (req,res)=>{ // Al agregar rutas protegidas entra directamente a ese en lugar de registro. No entra a registro a menos que rutasProtegidas ponga next
 app.post('/registro', async (req,res)=>{
     var datos = req.body
@@ -92,7 +108,7 @@ app.post('/registro', async (req,res)=>{
         datos.clave = await bcrypt.hash(datos.clave, 10) // Contraseña a traves de un Hash SIEMPRE
         console.log(datos)
     }
-    var registro = new UsuarioModel(datos)
+    var registro = new dbmodel.UsuariosModel(datos)
     var payload = {
         registro : registro,
         msg : ""
@@ -106,18 +122,18 @@ app.post('/registro', async (req,res)=>{
         payload.msg = "Error de guardado"
         res.send(payload)
     })
-})
+}) 
 
 app.post('/login', (req,res)=>{
     var usuario = req.body
     if(usuario){
         var cedula = usuario.cedula
-        val.clave = usuario.clave
+        var clave = usuario.clave
 
         var query = {// Query es una consulta a la base de datos y como mongo funciona con json, hay que crear un json que haga esa consulta
             "cedula" : cedula
         }
-        UsuarioModel.findOne(query, async function(err, result){
+        dbmodel.UsuariosModel.findOne(query, async function(err, result){
             var payload = {
                 mensajes : ""
             }
@@ -127,15 +143,32 @@ app.post('/login', (req,res)=>{
                 res.send(payload)
             } else{
                 try{ // Try catch es que mire el codigo, si hay un error va a catch y me manda cuál es el error
+                    console.log(result)
                     clave_en_db = result.clave // Result.clave es lo que buscó en el query
                     if(await bcrypt.compare(clave, clave_en_db)){
-
+                        payload.check = true
+                        payload.mensajes = "Login correcto"
+                        const token = jwt.sign(payload, app.get('llave'), {
+                            expiresIn : 60
+                        })
+                        payload.token = token
+                        res.send(payload)
+                    } else {
+                        payload.mensajes = "Usuario o clave incorrectos"
+                        res.send(payload)
                     }
                 } catch(error){
-
+                    payload.mensajes = "Usuario o clave incorrectos"
+                    console.log("Error: " + error.toString())
+                    res.send(payload)
                 }
             }
         })
+    } else{
+        var payload ={
+            mensaje : "Sin datos"
+        }
+        res.send(payload)
     }
 })
 
@@ -174,7 +207,7 @@ mongoose.connect(connectionString, {useNewURLParser: true}, (err, res)=>{
         console.log("Conectado a Mongo correctamente")
     }
 })
-
+/*
 var tabla_usuarios = new mongoose.Schema({ //Creado el objeto del modelo de dato que necesito
     cedula : Number,
     correo : String,
@@ -184,4 +217,4 @@ var tabla_usuarios = new mongoose.Schema({ //Creado el objeto del modelo de dato
     datetime : new Date() -GMT_5
 })
 
-var UsuarioModel = mongoose.model("Usuarios", tabla_usuarios)
+var UsuarioModel = mongoose.model("Usuarios", tabla_usuarios) */
