@@ -1,22 +1,35 @@
 <template>
   <div class="home">
+    <div v-if="username === 'mostrar'">
+    <img class = "logoMiniso" alt="Vue logo" src="../assets/Miniso_logo.png">
+  </div>
+  <div v-else>
     <img class = "logoPacMan" alt="Vue logo" src="../assets/pac-man-logo.png">
-    <HelloWorld msg="Welcome to track system by VC"/>
+  </div>
+    <div>{{username}}</div>
+    <div>
+      <input type="button" value="Clic Aqui">  
+      <input v-model="username" type="text" id="username">
+    </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+// De primero se hacen las importaciones 
+ 
+ // export default
+ export default{
+  data(){
+    return{
+      username : 'Vanessa',
+      password : 'Colombia123'
+    } // Despues de este van variables
+  } // Despues de este van las metodologias
 
-export default {
-  name: 'HomeView',
-  components: {
-    HelloWorld
-  }
-}
+ }
 </script>
 <style>
+ 
 .logoPacMan {
   width: 400px;
 }

@@ -7,7 +7,7 @@
 
 <style>
 .HomeroTitulo{
-  color :rgb(181, 47, 218)
+  color :rgb(200, 36, 36)
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
