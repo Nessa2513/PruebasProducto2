@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <div v-if="username === 'mostrar'">
+    <div v-if="mayuscula(username) === 'MOSTRAR'"> <!-- Estandar de codificacion internacial-->
     <img class = "logoMiniso" alt="Vue logo" src="../assets/Miniso_logo.png">
   </div>
   <div v-else>
@@ -24,8 +24,14 @@
       username : 'Vanessa',
       password : 'Colombia123'
     } // Despues de este van variables
-  } // Despues de este van las metodologias
-
+  }, // Despues de este van las metodologias
+methods:{
+  mayuscula(palabra){
+    var m = palabra.toUpperCase()
+    this.username = m
+    return m
+  }
+}
  }
 </script>
 <style>
