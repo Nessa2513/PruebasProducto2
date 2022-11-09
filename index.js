@@ -11,13 +11,13 @@ const config = require('./config')
 const { callbackify } = require('util')
 const bcrypt = require("bcrypt")
 const jwt = require('jsonwebtoken')
-const conrs = require('corse')
+const cors = require('cors')
 
 // Dos tipos de registro; Timestamp para cuando fue creado y otro para cuando fue actualizado (CreatedAt y UpdateAt) - se ve en la documentación de Mongoose
 
 const connectionString = "mongodb+srv://nessacardenasm:yolo2504@prueba1.txegamx.mongodb.net/?retryWrites=true&w=majority"
 
-app.use(corse())
+app.use(cors())
 app.use(express.json())
 app.set('llave', config.llave)
 

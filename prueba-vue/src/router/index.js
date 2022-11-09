@@ -20,7 +20,6 @@ const routes = [
    // }
   }
 ]
-
 const router = createRouter({
   history: createWebHashHistory(), //Crear el atrás de una página. Guardar el historial
   routes

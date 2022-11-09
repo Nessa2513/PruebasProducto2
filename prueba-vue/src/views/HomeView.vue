@@ -59,14 +59,9 @@
       token : ''
     } // Despues de este van variables
   }, // Despues de este van las metodologias
-  methods: {
-     // mayuscula(palabra){
-    //   var m = palabra.toUpperCase()
-    //   this.username = m
-    //   return m
-    //  }
-  
-  login(){
+    methods: {
+
+      login(){
  //   alert("Se ha dado clic")
     var datos = {
       cedula : this.username,
